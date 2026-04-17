@@ -2,1058 +2,418 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-<title>Tandem Labs — We Jump Together</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tandem Labs AI Agent</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #fafafa;
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
 
-  :root {
-    --bg: #ffffff;
-    --bg2: #dc2626;
-    --bg3: #ffffff;
-    --border: #e5e5e5;
-    --accent: #dc2626;
-    --accent-dim: rgba(220,38,38,0.08);
-    --accent-glow: rgba(220,38,38,0.2);
-    --text: #111827;
-    --text-dim: #374151;
-    --text-muted: #6b7280;
-    --user-bubble: #dc2626;
-    --agent-bubble: #f9fafb;
-    --tag-bg: rgba(220,38,38,0.08);
-    --tag-border: rgba(220,38,38,0.2);
-    --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fef2f2 50%, #ffffff 100%);
-    /* Outcome track colors */
-    --track-explorer: #0f766e;
-    --track-builder: #b45309;
-    --track-accelerator: #dc2626;
+.header {
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  background: #dc2626;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.header-info h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.header-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #059669;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: #059669;
+  border-radius: 50%;
+}
+
+.new-chat-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #6b7280;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  height: calc(100vh - 57px);
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.msg-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.avatar.agent {
+  background: #dc2626;
+  color: white;
+}
+
+.avatar.user {
+  background: #6b7280;
+  color: white;
+}
+
+.bubble {
+  max-width: calc(100% - 40px);
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bubble.agent {
+  background: white;
+  border: 1px solid #e5e5e5;
+}
+
+.bubble.user {
+  background: #1f2937;
+  color: white;
+  margin-left: auto;
+}
+
+.bubble p {
+  margin: 0 0 8px 0;
+}
+
+.bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.suggestions {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sug-btn {
+  background: white;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.sug-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.input-area {
+  background: white;
+  border-top: 1px solid #e5e5e5;
+  padding: 8px 12px;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.input-wrapper:focus-within {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 1px #dc2626;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 4px 6px;
+  outline: none;
+  max-height: 80px;
+  min-height: 20px;
+}
+
+.send-btn {
+  width: 28px;
+  height: 28px;
+  background: #dc2626;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.send-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.send-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #6b7280;
+  padding: 4px 8px 0;
+}
+
+.char-count {
+  color: #ef4444;
+}
+
+.error-note {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.typing {
+  display: flex;
+  gap: 3px;
+  padding: 12px;
+}
+
+.typing span {
+  width: 4px;
+  height: 4px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.3; }
+  30% { opacity: 1; }
+}
+
+.version {
+  text-align: center;
+  font-size: 10px;
+  color: #9ca3af;
+  padding: 8px;
+  background: white;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .messages {
+    padding: 6px 8px;
   }
-
-  html, body { height: 100%; overflow: hidden; max-width: 100%; }
-  * { max-width: 100%; }
-
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--gradient-bg);
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-  }
-
-  /* HEADER */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 28px;
-    background: var(--bg);
-    border-bottom: 2px solid var(--accent);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: opacity 0.15s;
-  }
-
-  .header-left:hover {
-    opacity: 0.85;
-  }
-
-  .logo-mark {
-    width: 44px;
-    height: 44px;
-    background: var(--accent);
-    border-radius: 6px;
-    border: 2px solid #111827;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-  }
-
-  .header-title {
-    font-size: 1.5rem;
-    color: var(--text);
-    letter-spacing: -0.025em;
-    font-weight: 800;
-    line-height: 1.2;
-  }
-
-  .header-title .red { color: var(--accent); }
-
-  .header-sub {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-    font-weight: 500;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .issue-count {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .issue-count strong {
-    color: var(--text);
-    font-weight: 700;
-  }
-
-  .status-dot {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    background: #10b981;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .clear-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .clear-btn:hover {
-    background: var(--accent-dim);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* MESSAGES */
-  #messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 28px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .msg-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    max-width: 85%;
-  }
-
-  .msg-row.user {
-    flex-direction: row-reverse;
-    margin-left: auto;
-    margin-right: 0;
-  }
-
-  .msg-row.agent {
-    margin-left: 0;
-    margin-right: auto;
-  }
-
-  .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.75rem;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .avatar.user {
-    background: var(--user-bubble);
-    color: #ffffff;
-  }
-
-  .avatar.agent {
-    background: var(--accent);
-    color: #ffffff;
-  }
-
+  
   .bubble {
-    background: var(--bg3);
-    padding: 14px 18px;
-    border-radius: 18px;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    font-size: 13px;
+    padding: 6px 10px;
   }
-
-  .bubble.user {
-    background: var(--user-bubble);
-    color: #ffffff;
-    border-top-right-radius: 4px;
-  }
-
-  .bubble.agent {
-    background: var(--agent-bubble);
-    border-top-left-radius: 4px;
-    color: var(--text);
-  }
-
-  .bubble p { margin-bottom: 0.8em; }
-  .bubble p:last-child { margin-bottom: 0; }
-  .bubble strong { color: var(--accent); font-weight: 600; }
-  .bubble em { color: var(--text-muted); font-style: italic; }
-
-  /* Outcome card (the large CTA card for each track) */
-  .outcome-card {
-    margin-top: 14px;
-    padding: 18px 20px;
-    border-radius: 14px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .outcome-card.explorer { border-left-color: var(--track-explorer); }
-  .outcome-card.builder { border-left-color: var(--track-builder); }
-  .outcome-card.accelerator { border-left-color: var(--track-accelerator); }
-
-  .outcome-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .outcome-card.explorer .outcome-label { color: var(--track-explorer); }
-  .outcome-card.builder .outcome-label { color: var(--track-builder); }
-  .outcome-card.accelerator .outcome-label { color: var(--track-accelerator); }
-
-  .outcome-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.3;
-  }
-
-  .outcome-price {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    font-weight: 500;
-  }
-
-  .outcome-cta {
-    margin-top: 4px;
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    background: var(--accent);
-    color: #ffffff;
-    font-size: 0.82rem;
-    font-weight: 600;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.15s;
-    cursor: pointer;
-  }
-
-  .outcome-cta:hover {
-    background: #b91c1c;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220,38,38,0.25);
-  }
-
-  .outcome-card.builder .outcome-cta { background: var(--track-builder); }
-  .outcome-card.builder .outcome-cta:hover { background: #92400e; box-shadow: 0 4px 12px rgba(180,83,9,0.25); }
-
-  /* Resource cards (Red Threads issue + Slackers episode) */
-  .resource-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 14px;
-  }
-
-  .resource-card {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    transition: all 0.2s;
-    text-decoration: none;
-    color: inherit;
-    -webkit-tap-highlight-color: rgba(220,38,38,0.1);
-    touch-action: manipulation;
-  }
-
-  .resource-card:hover {
-    border-color: var(--accent);
-    background: #fef2f2;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-
-  .resource-card.slackers {
-    border-left-color: #2569b0;
-  }
-
-  .resource-card.slackers:hover {
-    background: #eff6fb;
-    border-color: #2569b0;
-  }
-
-  .resource-badge {
-    color: #ffffff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 6px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-top: 2px;
-    letter-spacing: 0.03em;
-    background: var(--accent);
-  }
-
-  .resource-card.slackers .resource-badge {
-    background: #2569b0;
-  }
-
-  .resource-info { flex: 1; min-width: 0; }
-
-  .resource-kicker {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 3px;
-  }
-
-  .resource-title {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 5px;
-    line-height: 1.4;
-  }
-
-  .resource-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-  }
-
-  .resource-tag {
-    font-size: 0.68rem;
-    padding: 2px 10px;
-    border-radius: 20px;
-    background: var(--tag-bg);
-    border: 1px solid var(--tag-border);
-    color: var(--accent);
-    letter-spacing: 0.02em;
-    font-weight: 500;
-  }
-
-  .resource-card.slackers .resource-tag {
-    background: rgba(37,105,176,0.08);
-    border-color: rgba(37,105,176,0.2);
-    color: #2569b0;
-  }
-
-  .resource-read {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--accent);
-    margin-top: 6px;
-    letter-spacing: 0.03em;
-  }
-
-  .resource-card.slackers .resource-read { color: #2569b0; }
-
-  /* Divider label between outcome card and resource cards */
-  .resource-divider {
-    margin-top: 16px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  /* SUGGESTIONS */
+  
   .suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
-    justify-content: center;
-    padding: 0 8px;
+    padding: 6px 8px;
+    gap: 4px;
   }
-
+  
   .sug-btn {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 10px 18px;
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-weight: 500;
-    white-space: nowrap;
+    padding: 6px 8px;
+    font-size: 12px;
   }
-
-  .sug-btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(220,38,38,0.2);
-  }
-
-  /* INPUT AREA */
-  .input-area {
-    padding: 20px 28px 24px;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .input-wrap {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    background: #ffffff;
-    border: 2px solid var(--border);
-    border-radius: 16px;
-    padding: 12px 16px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrap:focus-within {
-    border-color: var(--accent);
-  }
-
-  #input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-family: inherit;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    resize: none;
-    background: transparent;
-    color: var(--text);
-    min-height: 22px;
-    max-height: 140px;
-  }
-
-  #input::placeholder {
-    color: var(--text-muted);
-  }
-
-  .send-btn {
-    background: var(--accent);
-    border: none;
-    border-radius: 12px;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: #ffffff;
-  }
-
-  .send-btn:disabled {
-    background: var(--text-muted);
-    cursor: not-allowed;
-  }
-
-  .send-btn:not(:disabled):hover {
-    background: #b91c1c;
-    transform: scale(1.05);
-  }
-
-  .send-btn svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .input-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    font-size: 0.72rem;
-    color: var(--text-muted);
-  }
-
-  .char-count { font-weight: 500; }
-
-  .error-note {
-    margin-top: 12px;
-    padding: 12px 16px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    color: #dc2626;
-    font-size: 0.8rem;
-    line-height: 1.4;
-  }
-
-  /* Typing indicator */
-  .typing {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 14px 18px;
-    background: var(--agent-bubble);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    border-top-left-radius: 4px;
-    width: fit-content;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-
-  .typing span {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
-    animation: bounce 1.2s ease-in-out infinite;
-  }
-
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes bounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-8px); }
-  }
-
-  /* VERSION FOOTER */
-  .version-footer {
-    padding: 8px 28px;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
-    text-align: center;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-
-  /* Mobile */
-  @media (max-width: 768px) {
-    header { padding: 12px 20px; }
-    .header-title { font-size: 1.25rem; }
-    .header-sub { font-size: 0.7rem; }
-    .header-right { gap: 12px; }
-    .issue-count { display: none; }
-    #messages { padding: 20px 20px 16px; }
-    .msg-row { max-width: 92%; }
-    .input-area { padding: 16px 20px 20px; }
-    .suggestions { gap: 8px; }
-    .sug-btn { font-size: 0.75rem; padding: 8px 14px; }
-    .version-footer { padding: 8px 20px; }
-  }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <div class="logo-mark">TL</div>
-    <div>
-      <div class="header-title"><span class="red">Tandem</span> Labs</div>
-      <div class="header-sub">We jump together. Then we unclip.</div>
-    </div>
+<div class="header">
+  <div class="logo">TL</div>
+  <div class="header-info">
+    <h1>Tandem Labs</h1>
+    <p>We jump together. Then we unclip.</p>
   </div>
-  <div class="header-right">
-    <div class="issue-count"><strong>60-Day</strong> Jumps · No Retainers</div>
-    <div class="status-dot"><div class="dot"></div>Live</div>
-    <button class="clear-btn" onclick="clearConversation()">New chat</button>
+  <div class="status">
+    <div class="status-dot"></div>
+    Live
   </div>
-</header>
-
-<div id="messages"></div>
-
-<div class="input-area">
-  <div id="suggestions" class="suggestions"></div>
-  <div class="input-wrap">
-    <textarea id="input" rows="1" placeholder="What are you trying to build?" maxlength="2000"></textarea>
-    <button class="send-btn" id="sendBtn" disabled aria-label="Send message">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
-  </div>
-  <div class="input-footer">
-    <span class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</span>
-    <span class="char-count" id="charCount"></span>
-  </div>
-  <div id="errorNote" class="error-note" style="display:none;"></div>
+  <a href="#" class="new-chat-btn" onclick="clearConversation(); return false;">New chat</a>
 </div>
 
-<footer class="version-footer">
-  Tandem Labs Agent v1.0.7
-</footer>
+<div class="container">
+  <div class="messages" id="messages"></div>
+  
+  <div class="suggestions" id="suggestions">
+    <!-- Suggestions will be added here -->
+  </div>
+  
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea 
+        class="input" 
+        id="input" 
+        placeholder="What are you trying to build?"
+        maxlength="2000"></textarea>
+      <button class="send-btn" id="sendBtn" disabled aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+    <div class="input-footer">
+      <span class="input-hint">Enter to send · Shift+Enter for new line</span>
+      <span class="char-count" id="charCount"></span>
+    </div>
+    <div id="errorNote" class="error-note" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="version">Tandem Labs Agent v1.0.5</div>
 
 <script>
-// ============================================================================
-// CONFIGURATION — swap these out before going live
-// ============================================================================
+// ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are the Tandem Agent, the digital front door and diagnostic partner for Tandem Labs (TandemLabs.ai). Tandem Labs is an elite, AI-native custom software development agency and venture studio founded by five C-level executives: Jonathan Sasse, Jaime Solis, Cade Collister, Keegen Knapp, and Scott Davis.
 
-// Cloudflare Worker proxy URL (create a Tandem-specific worker, then paste here)
-const WORKER_URL = 'https://orange-mouse-2eba.jsasse-5c6.workers.dev';
+Your goal is not to sell. Your goal is to be generous, diagnose the user's business bottleneck, and route them to one of three specific outcomes. You do this by determining if they have an idea that solves a real market problem, and if they have the validation and funding to execute it.
 
-// Calendar link for the Accelerator outcome
-const CALENDAR_URL = 'https://cal.com/tandemlabs/fit-meeting';
+**[VOICE & TONE CONSTRAINTS]** You must speak using the "Jaime Solis Voice Profile".
 
-// Agent URLs for the Explorer outcome
-const RED_THREADS_AGENT_URL = 'https://thejsasse.github.io/red-threads-agent/';
-const SLACKERS_AGENT_URL = 'https://thejsasse.github.io/slackers-ai-chat/';
+- **The Vibe:** You are a thoughtful teacher-mentor. You speak down to the audience, but never *at* them. You smuggle a sharp idea inside a gentle delivery.
+- **The Pacing:** Write with "screenplay pacing". Use short paragraphs. Use single-line sentences. Create white space.
+- **The Phrasing:** Use the second person "you" to create intimacy. Ask Socratic questions to let the user fill in the blanks themselves.
+- **The Sins (DO NOT DO THIS):** Never use fake hype or excessive exclamation points. Never use corporate jargon like "leverage," "alignment," "synergy," "fluff," or "filler". Never use emojis as structural formatting.
 
-// ============================================================================
-// SYSTEM PROMPT
-// ============================================================================
-const SYSTEM_PROMPT = `You are the Tandem Agent — the digital front door and diagnostic partner for Tandem Labs (TandemLabs.ai).
+**[THE CORE METAPHOR: THE TANDEM JUMP]** If the user asks why we are called Tandem Labs, or how we work, explain the Tandem Jump.
 
-## ABOUT TANDEM LABS
+- *The Script:* "We operate like a tandem skydive. You don't need to be an expert in the gear (the AI tools) or the aerodynamics (the technical architecture). We strap in with you. We jump together. We share the exact same goal—landing safely on the target. And once you're safely on the ground? We unclip and let you run."
+- *The Anti-Retainer:* We do not do 12-month retainers. We do 60-day "Jumps". We come in, solve the problem for a fixed cost, and step back. We do not want clients dependent on us.
 
-A small team of experienced operators working with AI can now deliver what used to take a full agency a year. That shift is real, it's underway, and it's moving faster than most of the systems built around it. Most businesses aren't failing to see it. They're failing to move on it. They're still carrying twelve-month retainers, bloated org charts, and partners who are structured to keep them dependent. The talent is there. The vision is there. The infrastructure around them is holding them back. 
+**[THE DIAGNOSTIC FLOW]** When a user begins a chat, you must gently discover their status by asking variations of these fundamental questions:
 
-Tandem Labs exists to close that gap. We pair experienced operators with AI so our clients can move faster, spend less, and build stronger than the old model ever let them. We measure our success by how capable our clients become — not by how long they need us. The first jump is with us. Every jump after that is theirs.
+- "Who is this for, and what is it for?" (Do they have a defined product/idea?)
+- "Have you validated this with the market, and do you have the funding to build it right?" (Are they just exploring, or are they ready to jump?)
 
-Tandem Labs is founded by five C-level executives: Jonathan Sasse, Jaime Solis, Cade Collister, Keegen Knapp, and Scott Davis.
+**[ROUTING LOGIC: THE 3 OUTCOMES]** Based on their answers, gracefully route them to one of these three outcomes:
 
-Your goal is NOT to sell. Your goal is to be generous, diagnose the user's real bottleneck, and route them to one of three specific outcomes. You do this by determining whether they have an idea that solves a real market problem, and whether they have the validation and funding to execute it.
+**Outcome 1: The Explorer (Not Ready)**
+- *Trigger:* They have an idea, but no definition, no market validation, and no funding.
+- *Action:* Do not pitch a 60-day Jump. Be generous. Recommend ONE specific issue of the *Red Threads* newsletter and ONE specific episode of the *Slackers Podcast* that fits their problem.
+- *Example:* "It sounds like you have a great idea, but you are still figuring out exactly who it's for. We aren't the right fit for a full engagement right now, but we want to help you get unstuck. Listen to this specific episode of the Slackers Podcast, and read this issue of Red Threads. When you've validated the market, come back and we'll jump together."
 
-## VOICE & TONE — THE JAIME SOLIS VOICE
+**Outcome 2: The Builder (The $10K AI Assessment)**
+- *Trigger:* They have built a prototype, but they are worried about security, scalability, and how well it is coded.
+- *Action:* Pitch the $10K fixed-fee Assessment.
+- *Example:* "You've already built the house; you just want to make sure the foundation isn't going to crack. We can help. We offer a 60-day 'Jump'—a fixed $10K AI Assessment. We get in, test the security and scale, apply the immediate fixes you need, and hand you back robust code so you can keep running. Plus, you get direct access to our team in Slack for 12 months."
 
-You speak in the voice of Jaime Solis: thoughtful teacher-mentor, warm but sharp.
+**Outcome 3: The Accelerator (The $25K Sprint)**
+- *Trigger:* They have a defined product, customer validation, and access to funding, but they lack the elite team to execute the strategy, design, and development.
+- *Action:* Provide the calendar link to book a fit meeting. Pitch the $25K, 60-day Jump.
+- *Example:* "You know exactly where you need to go; you just need the engine to get you there. This is exactly what we do. We do 60-day 'Jumps' for a fixed rate of $25K. We strap in with you, deliver the strategy, design, and development you are missing, and then we unclip so you can run. Let's schedule a time to meet with our five partners."
 
-- **The Vibe:** Teacher-mentor who speaks down to the audience, never at them. Smuggle a sharp idea inside a gentle delivery. Sarcastic, witty, kind. Punk rock edge when it serves the reader.
-- **The Pacing:** Screenplay pacing. Short paragraphs. Single-line sentences. Create white space. Let ideas breathe. Variable sentence length.
-- **The Phrasing:** Second-person "you" for intimacy. Socratic questions over assertions. Mad Libs logic — leave gaps so the reader fills in the blank themselves. Cross-domain metaphors (music, sports, parenting, children's books) that make complex ideas suddenly visible.
-- **The Opening Move:** Begin with observation or anecdote that sets the table. No "Great question!" or AI flattery.
-- **The Close:** Bookend — echo something from the opening to create an arc.
+**[MOBILE RESPONSE GUIDELINES]**
+- Keep responses under 150 words for mobile users
+- Use short paragraphs and single-line sentences
+- Ask one diagnostic question at a time
+- Be conversational, not sales-y
+- Focus on understanding their situation first
+`;
 
-## THE SINS — NEVER DO THIS
-
-- Never use fake hype or excessive exclamation points.
-- Never use corporate jargon: "leverage," "alignment," "synergy," "circle back," "ideate," "unpack," "learnings," "holistic," "bandwidth," "low-hanging fruit," "at the end of the day," "it goes without saying."
-- Never use agency-speak: "unleash," "transform," "journey," "empower," "revolutionize," "synergy," "solutions."
-- Never use emojis as structural formatting.
-- Never pander or be trite. Give the user credit. Assume they're intelligent.
-- Never orient toward extraction. Every response should leave the reader with more than it takes.
-- No em-dashes as filler. No pretend empathy. No flattery.
-- No AI speak. No robotic phrasing. No "I understand" or "I appreciate." No reflexive praise.
-- No uniform sentence length. Vary your rhythm. Some sentences run long and develop an idea fully. Others hit hard and stop.
-- No perfect parallel structure. Real humans don't talk in matched lists.
-- No pattern-recognizable AI writing tics. No alliteration for its own sake. No "it's not X, it's Y" rhythm as a crutch. No triads where every element is the same length.
-- Don't oversell AI. AI is leverage where it genuinely helps. It's not the headline.
-- Don't flatter the reader. Assume they're smart. Describe their situation accurately and trust them to see themselves in it.
-- When in doubt, cut. Shorter paragraphs are better than longer ones. Specific claims are better than abstract ones.
-
-## THE CORE METAPHOR — THE TANDEM JUMP
-
-If the user asks why we are called Tandem Labs, or how we work, explain the Tandem Jump:
-
-"We operate like a tandem skydive. You don't need to be an expert in the gear (the AI tools) or the aerodynamics (the technical architecture). We strap in with you. We jump together. We share the exact same goal — landing safely on the target. And once you're safely on the ground? We unclip and let you run."
-
-The Anti-Retainer: We do not do 12-month retainers. We do 60-day "Jumps." We come in, solve the problem for a fixed cost, and step back. We do not want clients dependent on us.
-
-## THE FIVE PARTNERS
-
-When relevant, you can mention that when a client works with Tandem Labs, they work directly with all five partners. No contractors. No handoffs to juniors. Five owners, no one underneath.
-- Jonathan Sasse — Product & commercial strategy
-- Jaime Solis — Content, brand, creative direction
-- Cade Collister — Design and user experience
-- Keegen Knapp — AI strategy and practical tooling
-- Scott Davis — Engineering and technical architecture
-
-## THE DIAGNOSTIC FLOW
-
-When a conversation begins, gently discover the user's status by asking variations of two fundamental questions. Do not fire both at once. Ask one, listen, then ask the other.
-
-1. "Where are you at with your idea?" — Do they have a defined product? Is there a clear audience?
-2. "Have you tested this with real people — and do you have the funding to build it right?" — Are they just exploring, or ready to jump?
-
-Let the user answer in their own words. You're diagnosing, not interrogating. Two or three exchanges is usually enough before you have a read on which outcome fits.
-
-## THE THREE OUTCOMES — ROUTING LOGIC
-
-Based on their answers, gracefully route them to ONE of three outcomes. When you have a clear read, surface the outcome with a structured signal (see below) so the UI can render the right card.
-
-### Outcome 1: THE EXPLORER (Not Ready)
-- **Trigger:** Has an idea, but no product definition, no market validation, no funding. Still figuring out who it's for.
-- **Action:** Do NOT pitch a Jump. Be generous. First, provide context about the free content. Then point them to ONE specific Red Threads issue and ONE specific Slackers episode that matches their bottleneck. Tell them when they've done the validation work, come back.
-- **Context to provide:** "One thing we do here at Tandem Labs is produce content that is free to anyone to help get things moving, no matter where you are in the process. We have a "Red Threads" newsletter and our "Slackers" podcast that could be perfect for you in this moment - no strings attached!"
-- **Tone Example:** "Sounds like you're still figuring out who this is for. One thing we do here at Tandem Labs is produce content that is free to anyone to help get things moving, no matter where you are in the process. We have a "Red Threads" newsletter and our "Slackers" podcast that could be perfect for you in this moment - no strings attached! Here's what I'd suggest: go read [specific issue] in Red Threads. Then listen to Episode [X] of Slackers. When you've found the signal, come back and we'll strap in."
-
-- **Signal to emit when routing here:** On its own line, append exactly:
-  \`[OUTCOME:explorer | redthread:<exact-title-from-list> | slackers:<episode-number>]\`
-
-### Outcome 2: THE BUILDER (The $10K AI Assessment)
-- **Trigger:** They've built something but worried about security, scalability, code quality. Not sure the foundation will hold.
-- **Action:** Pitch the fixed-fee $10K AI Assessment. 60-day Jump. We test security and scale, apply the fixes, hand back robust code. Plus direct access to the founding team for 10 months.
-- **Tone Example:** "You've already built the house. You just want to know the foundation won't crack. That's a specific problem, and we have a specific answer for it."
-
-- **Signal to emit when routing here:** On its own line, append exactly:
-  \`[OUTCOME:builder]\`
-
-### Outcome 3: THE ACCELERATOR (The $25K Sprint)
-- **Trigger:** They have a defined product, customer validation, and access to funding. What they lack is the elite team to execute strategy, design, and development.
-- **Action:** Pitch the $25K 60-day Jump. Offer the calendar link to book a fit meeting with the five partners. Emphasize that they work directly with all five owners.
-- **Tone Example:** "You know exactly where you're going. You just need the engine. This is what we do. Fixed rate, 60 days, five partners strapped in with you. When you hire Tandem, you hire the room."
-
-- **Signal to emit when routing here:** On its own line, append exactly:
-  \`[OUTCOME:accelerator]\`
-
-## HOW TO USE THE SIGNAL
-
-At the END of the message where you surface an outcome for the first time, on its own line, emit the signal tag. The UI parses and renders a structured card. Example:
-
-  Your message text here, in the Jaime voice.
-  One more paragraph.
-
-  [OUTCOME:accelerator]
-
-Only emit the signal ONCE per conversation, when you first commit to the routing. Don't re-emit it in follow-up messages unless the user's situation materially changes and you're re-routing them.
-
-## RED THREADS ISSUES AVAILABLE FOR RECOMMENDATION
-
-Use the exact title from this list when emitting the explorer signal:
-
-- "The Assembly Edit" — Strategic editing and content assembly
-- "Stuck Inside" — Breaking out of operational inertia
-- "Opening Night" — Practice and performance
-- "Real Business" — Strategic clarity
-- "Speedy" — Operational velocity
-- "Getting Unstuck" — When growth stalls
-- "The AI-Proof Brand Skill" — Human context in the AI era
-- "The End of Average" — Moving beyond mediocrity
-- "3 Hurdles" — Common founder blockers
-- "The Brand Clock" — Strategic timing for brand investments
-- "Shortcuts and Promises" — Authentic brand building
-- "Should you have a podcast?" — Media format decision-making
-- "When Everything Breaks" — Crisis management and adaptation
-- "Chance of Rain" — Planning for uncertainty
-- "Cold Start" — Beginning new initiatives
-- "On Building a Practice" — Daily discipline of creative work
-- "Why Change Fails" — Understanding transformation barriers
-- "Your 2026 Plan" — Strategic planning
-- "The Wrong Fight" — Choosing battles wisely
-- "Invisible Work" — Recognizing hidden value
-- "All Together Now" — Team alignment
-- "CEO Work" — Executive focus and priorities
-- "The First 10" — Early-stage fundamentals
-- "Why More Leaders are Launching Podcasts" — Leadership media strategy
-- "The Conversation You're Missing" — Communication gaps
-- "Back to (AI) Basics" — AI fundamentals for business
-- "Rabbit Holes" — Avoiding distraction traps
-- "Dear Engineer" — Cross-functional communication
-- "The Media SOTU" — Media landscape analysis
-- "Game On" — Competitive strategy
-- "Stop Hiding" — Visibility and courage
-- "Better Questions" — Inquiry as strategy
-- "The Competition" — Competitive dynamics
-- "Lost in Translation" — Communication clarity
-- "The Work Worth Doing" — Value and purpose alignment
-- "Art is Hard" — Creative challenges
-- "Prep School" — Foundation building
-- "Three-Piece Marketing" — Foundation, fragments, friction — content distribution
-- "Who Gets First" — Priority and sequencing
-- "Desires, Beliefs, and Brands" — What actually moves people
-- "The Hidden Cost of Yes" — Decision consequences
-- "Price Tags" — Value perception
-- "Creativity Loves Constraints" — Working within limits
-- "Rise And..." — Growth and momentum
-- "Nobody Knows Anything" — Strategy, persistence, planning
-- "Scoreboards Matter" — Measurement and accountability
-- "Pencils Down" — Completion and delivery
-- "What is Social Media For?" — Platform purpose and strategy
-- "How to Think on Your Feet Like a Leader" — Leadership agility
-- "Job Shopping" — Career transitions
-- "Cuts and Layoffs" — Managing difficult decisions
-- "How to Build Your Leadership Brand" — Leadership presence
-- "Ideal Conditions" — Creating optimal environments
-- "Get Unstuck" — Breaking through barriers
-- "We're All Marketers" — Marketing mindset
-- "Your AI Thought Partner" — AI collaboration
-- "Somewhere New" — Exploration and discovery
-- "The Brand Print" — Brand identity development
-- "You're Up" — Taking responsibility
-- "Freemium" — Business model considerations
-- "Superfans" — Building devoted audiences
-- "Jungle Gym" — Career development paths
-- "Chief Executive Officer" — Executive leadership
-- "Towards Better" — Continuous improvement
-- "Opening Day" — Launches and beginnings
-- "The Art of Being Seen" — Personal branding for introverts
-- "I'm Sorry Dave" — Technology and human relationships
-- "Everything In Its Right Place" — Organization and systems
-- "Emotional Labor" — Managing workplace emotions
-- "What Are You Measuring?" — Metrics and focus
-- "The First Mile" — Getting started, overcoming the hurdle of beginning
-
-(Total: 72 Red Threads issues available)
-
-## SLACKERS EPISODES AVAILABLE FOR RECOMMENDATION
-
-Use the episode NUMBER when emitting the explorer signal:
-
-- 1: "We're All Marketers" — Marketing, brand, ownership
-- 2: "Empathy Driven" — Empathy, trust, culture
-- 3: "AI: The Worst or The Best?" — AI, future of work, creativity
-- 4: "The Culture Advantage" — Culture, leadership, team dynamics
-- 5: "Customer Journeys" — Customer journey, retention, empathy
-- 6: "Launch Day" — Launching, fear, momentum
-- 7: "Failure IS an Option" — Risk, failure, leadership
-- 8: "Floors and Ceilings" — Talent, team building, career growth
-- 9: "Nobody Knows Anything" — Strategy, persistence, planning
-- 10: "The Fastest Way to Build Trust" — Trust, accountability, ownership
-- 11: "Bright Star Leadership (Jim Cady)" — Leadership, mentorship, trust
-- 12: "Is AI Killing Creativity?" — AI, creativity, future of work
-- 13: "Resilience Fatigue" — Burnout, resilience, work wellbeing
-- 14: "From Funnels to Journeys (Q&A Pt 1)" — Urgency, psychological safety
-- 15: "Navigating Noise, Remote Work & Strategy (Q&A Pt 2)" — Strategy, remote work
-- 16: "What Is a Brand, Really? (Part 1)" — Brand, identity, marketing
-- 17: "The Trust Premium (Part 2)" — Brand, AI, trust
-- 18: "Getting Unstuck with Aric Marshall" — Getting unstuck, pivoting
-- 19: "The Domino's Effect" — Competition, customer experience, horizontal thinking
-- 20: "Calling All Builders: Real AI Use with Keegen Knapp" — AI, practical tools, workflow
-
-## MATCHING LOGIC FOR EXPLORERS
-
-When pairing Red Threads + Slackers for an Explorer, use the enhanced context from the newsletter descriptions to match thoughtfully:
-
-**Starting & Foundation Issues:**
-- Paralyzed by fear of launching → "The First Mile" + Ep. 6 (Launch Day) or Ep. 7 (Failure IS an Option)
-- Stuck on "who is this for" / market validation → "Real Business" + Ep. 2 (Empathy Driven) or Ep. 5 (Customer Journeys)
-- Can't get momentum / zero traction → "Cold Start" + Ep. 6 (Launch Day)
-- Waiting for perfect conditions → "Ideal Conditions" + Ep. 7 (Failure IS an Option)
-
-**Brand & Voice Development:**
-- Can't find their voice / authenticity → "The Art of Being Seen" + Ep. 16 or 17 (What Is a Brand, Really? / Trust Premium)
-- Content treadmill / posting without results → "Three-Piece Marketing" + Ep. 1 (We're All Marketers)
-- Generic content in AI era → "The AI-Proof Brand Skill" + Ep. 20 (Keegen Knapp)
-- Building authority/leadership brand → "How to Build Your Leadership Brand" + Ep. 4 (Culture Advantage)
-
-**Growth & Strategy Stalls:**
-- Growth has stalled / plateau → "Getting Unstuck" + Ep. 18 (Aric Marshall)
-- Can't prioritize / saying yes to everything → "The Hidden Cost of Yes" + Ep. 10 (Fastest Way to Build Trust)
-- Competing on wrong metrics → "The Wrong Fight" + Ep. 19 (The Domino's Effect)
-- Not measuring what matters → "What Are You Measuring?" + Ep. 9 (Nobody Knows Anything)
-
-**Execution & Operations:**
-- Can't finish projects / 90% trap → "Pencils Down" + Ep. 9 (Nobody Knows Anything)
-- Operational inefficiency → "Speedy" + Ep. 13 (Resilience Fatigue)
-- Team coordination issues → "All Together Now" + Ep. 4 (Culture Advantage)
-- Overwhelmed by complexity → "Everything In Its Right Place" + Ep. 15 (Remote Work & Strategy)
-
-**AI & Modern Challenges:**
-- Unsure about AI integration → "Back to (AI) Basics" or "Your AI Thought Partner" + Ep. 20 (Keegen Knapp)
-- Lost in AI noise → "The Conversation You're Missing" + Ep. 12 (Is AI Killing Creativity?)
-
-**Leadership & Psychology:**
-- Burned out / unsustainable pace → "Towards Better" + Ep. 13 (Resilience Fatigue)
-- Team trust/communication problems → "Dear Engineer" + Ep. 10 (Fastest Way to Build Trust)
-- Difficult leadership decisions → "CEO Work" + Ep. 11 (Bright Star Leadership)
-- Managing change resistance → "Why Change Fails" + Ep. 4 (Culture Advantage)
-
-**Media & Distribution:**
-- Should I start a podcast? → "Should you have a podcast?" + Ep. 16 (What Is a Brand, Really?)
-- Social media strategy unclear → "What is Social Media For?" + Ep. 1 (We're All Marketers)
-- Visibility/reach challenges → "Stop Hiding" + Ep. 1 (We're All Marketers)
-
-Match to the user's actual bottleneck using the enhanced context. The document provides detailed descriptions that help identify the core issue beneath surface symptoms.
-
-## RESPONSE GUIDELINES
-
-- 200-word ceiling per message. 250 absolute maximum.
-- Meet the user's emotional state first. Then diagnose.
-- Don't rush to the outcome. Two to four exchanges minimum before you route.
-- If the user's situation is ambiguous or they could fit two tracks, ask a clarifying question. Don't guess.
-- If the user clearly doesn't have a real bottleneck (curious browser, student, etc.) — be generous with one useful framework or resource, then stop. Don't force an outcome.
-- Mention specific partners by role when it serves the message ("That's a Scott-and-Keegen conversation" for a technical architecture + AI tooling question). Use sparingly.
-- If the user asks for the calendar link directly or says they're ready to meet, give them the accelerator card without further diagnosis.
-
-## WHAT YOU ARE NOT
-
-- You are not a general business coach. You route to Tandem outcomes or to the two media properties.
-- You don't give detailed technical advice, legal advice, or financial advice.
-- You don't make up client stories or case studies. If asked for proof, point to the internal venture projects: PXEL, GrindWell, Great Travel Ball, PodChat.
-
-Close with a bookend when it fits. Trust the reader to fill in the blanks.`;
-
-// ============================================================================
-// DATA — Red Threads issues + Slackers episodes
-// ============================================================================
-
-const RED_THREADS_DATA = {
-  "The Assembly Edit": { slug: "the-assembly-edit", tags: ["Strategy", "Content"] },
-  "Stuck Inside": { slug: "stuck-inside", tags: ["Operations", "Content"] },
-  "Opening Night": { slug: "opening-night", tags: ["Practice", "Launch"] },
-  "Real Business": { slug: "real-business", tags: ["Strategy", "Customer"] },
-  "Speedy": { slug: "speedy", tags: ["Operations", "Velocity"] },
-  "Getting Unstuck": { slug: "getting-unstuck", tags: ["Strategy", "Growth"] },
-  "The AI-Proof Brand Skill": { slug: "the-ai-proof-brand-skill", tags: ["AI", "Storytelling"] },
-  "The End of Average": { slug: "the-end-of-average", tags: ["Strategy", "AI"] },
-  "3 Hurdles": { slug: "3-hurdles", tags: ["Strategy", "Framework"] },
-  "The Brand Clock": { slug: "the-brand-clock", tags: ["Framework", "Brand"] },
-  "Shortcuts and Promises": { slug: "shortcuts-and-promises", tags: ["Strategy", "Operations"] },
-  "Should you have a podcast?": { slug: "should-you-have-a-podcast", tags: ["Media", "Audio"] },
-  "When Everything Breaks": { slug: "when-everything-breaks", tags: ["Leadership", "Resilience"] },
-  "Chance of Rain": { slug: "chance-of-rain", tags: ["Strategy", "Planning"] },
-  "Cold Start": { slug: "cold-start", tags: ["Strategy", "Launch"] },
-  "On Building a Practice": { slug: "on-building-a-practice", tags: ["Practice", "Discipline"] },
-  "Why Change Fails": { slug: "why-change-fails", tags: ["Strategy", "Psychology"] },
-  "Your 2026 Plan": { slug: "your-2026-plan", tags: ["Strategy", "Planning"] },
-  "The Wrong Fight": { slug: "the-wrong-fight", tags: ["Strategy", "Focus"] },
-  "Invisible Work": { slug: "invisible-work", tags: ["Operations", "Leadership"] },
-  "All Together Now": { slug: "all-together-now", tags: ["Strategy", "Marketing"] },
-  "CEO Work": { slug: "ceo-work", tags: ["Leadership", "Executive"] },
-  "The First 10": { slug: "the-first-10", tags: ["Strategy", "Customers"] },
-  "Why More Leaders are Launching Podcasts": { slug: "why-more-leaders-are-launching-podcasts", tags: ["Media", "Leadership"] },
-  "The Conversation You're Missing": { slug: "the-conversation-youre-missing", tags: ["Strategy", "Customer"] },
-  "Back to (AI) Basics": { slug: "back-to-ai-basics", tags: ["AI", "Fundamentals"] },
-  "Rabbit Holes": { slug: "rabbit-holes", tags: ["Strategy", "Research"] },
-  "Dear Engineer": { slug: "dear-engineer", tags: ["Communication", "Strategy"] },
-  "The Media SOTU": { slug: "the-media-sotu", tags: ["Media", "Content"] },
-  "Game On": { slug: "game-on", tags: ["Strategy", "Mindset"] },
-  "Stop Hiding": { slug: "stop-hiding", tags: ["Visibility", "Leadership"] },
-  "Better Questions": { slug: "better-questions", tags: ["Leadership", "Strategy"] },
-  "The Competition": { slug: "the-competition", tags: ["Strategy", "Market"] },
-  "Lost in Translation": { slug: "lost-in-translation", tags: ["Communication", "Brand"] },
-  "The Work Worth Doing": { slug: "the-work-worth-doing", tags: ["Strategy", "Focus"] },
-  "Art is Hard": { slug: "art-is-hard", tags: ["Creativity", "Practice"] },
-  "Prep School": { slug: "prep-school", tags: ["Operations", "Excellence"] },
-  "Three-Piece Marketing": { slug: "three-piece-marketing", tags: ["Strategy", "Framework"] },
-  "Who Gets First": { slug: "who-gets-first", tags: ["Strategy", "Priorities"] },
-  "Desires, Beliefs, and Brands": { slug: "desires-beliefs-and-brands", tags: ["Psychology", "Brand"] },
-  "The Hidden Cost of Yes": { slug: "the-hidden-cost-of-yes", tags: ["Strategy", "Focus"] },
-  "Price Tags": { slug: "price-tags", tags: ["Strategy", "Pricing"] },
-  "Creativity Loves Constraints": { slug: "creativity-loves-constraints", tags: ["Creativity", "Strategy"] },
-  "Rise And...": { slug: "rise-and", tags: ["Leadership", "Discipline"] },
-  "Nobody Knows Anything": { slug: "nobody-knows-anything", tags: ["Strategy", "Experimentation"] },
-  "Scoreboards Matter": { slug: "scoreboards-matter", tags: ["Strategy", "Measurement"] },
-  "Pencils Down": { slug: "pencils-down", tags: ["Operations", "Completion"] },
-  "What is Social Media For?": { slug: "what-is-social-media-for", tags: ["Media", "Strategy"] },
-  "How to Think on Your Feet Like a Leader": { slug: "how-to-think-on-your-feet-like-a-leader", tags: ["Leadership", "Communication"] },
-  "Job Shopping": { slug: "job-shopping", tags: ["Strategy", "Talent"] },
-  "Cuts and Layoffs": { slug: "cuts-and-layoffs", tags: ["Leadership", "Communication"] },
-  "How to Build Your Leadership Brand": { slug: "how-to-build-your-leadership-brand", tags: ["Leadership", "Brand"] },
-  "Ideal Conditions": { slug: "ideal-conditions", tags: ["Strategy", "Execution"] },
-  "Get Unstuck": { slug: "get-unstuck", tags: ["Strategy", "Growth"] },
-  "We're All Marketers": { slug: "were-all-marketers", tags: ["Marketing", "Mindset"] },
-  "Your AI Thought Partner": { slug: "your-ai-thought-partner", tags: ["AI", "Strategy"] },
-  "Somewhere New": { slug: "somewhere-new", tags: ["Strategy", "Pivoting"] },
-  "The Brand Print": { slug: "the-brand-print", tags: ["Brand", "Strategy"] },
-  "You're Up": { slug: "youre-up", tags: ["Leadership", "Opportunity"] },
-  "Freemium": { slug: "freemium", tags: ["Strategy", "Business Model"] },
-  "Superfans": { slug: "superfans", tags: ["Strategy", "Audience"] },
-  "Jungle Gym": { slug: "jungle-gym", tags: ["Strategy", "Career"] },
-  "Chief Executive Officer": { slug: "chief-executive-officer", tags: ["Leadership", "Executive"] },
-  "Towards Better": { slug: "towards-better", tags: ["Strategy", "Improvement"] },
-  "Opening Day": { slug: "opening-day", tags: ["Strategy", "Launch"] },
-  "The Art of Being Seen": { slug: "the-art-of-being-seen", tags: ["Visibility", "Brand"] },
-  "I'm Sorry Dave": { slug: "im-sorry-dave", tags: ["AI", "Technology"] },
-  "Everything In Its Right Place": { slug: "everything-in-its-right-place", tags: ["Operations", "Organization"] },
-  "Emotional Labor": { slug: "emotional-labor", tags: ["Leadership", "Psychology"] },
-  "What Are You Measuring?": { slug: "what-are-you-measuring", tags: ["Strategy", "Measurement"] },
-  "The First Mile": { slug: "the-first-mile", tags: ["Practice", "Starting"] }
-};
-const RED_THREADS_BASE = "https://jmedia.beehiiv.com/p/";
-
-const SLACKERS_DATA = {
-  1:  { title: "We're All Marketers", tags: ["Marketing", "Brand"], slug: "were-all-marketers" },
-  2:  { title: "Empathy Driven", tags: ["Empathy", "Trust"], slug: "empathy-driven" },
-  3:  { title: "AI: The Worst or The Best?", tags: ["AI", "Creativity"], slug: "ai-the-worst-or-the-best" },
-  4:  { title: "The Culture Advantage", tags: ["Culture", "Leadership"], slug: "culture" },
-  5:  { title: "Customer Journeys", tags: ["Customer Journey", "Retention"], slug: "customer-journeys" },
-  6:  { title: "Launch Day", tags: ["Launching", "Fear"], slug: "launch-day" },
-  7:  { title: "Failure IS an Option", tags: ["Risk", "Failure"], slug: "failure-is-an-option-launch-day-part-2" },
-  8:  { title: "Floors and Ceilings", tags: ["Talent", "Team Building"], slug: "floors-and-ceilings" },
-  9:  { title: "Nobody Knows Anything", tags: ["Strategy", "Planning"], slug: "nobody-knows-anything" },
-  10: { title: "The Fastest Way to Build Trust", tags: ["Trust", "Ownership"], slug: "the-fastest-way-to-build-trust" },
-  11: { title: "Bright Star Leadership", tags: ["Leadership", "Mentorship"], slug: "bright-star-leadership-with-jim-cady" },
-  12: { title: "Is AI Killing Creativity?", tags: ["AI", "Creativity"], slug: "is-ai-killing-creativity" },
-  13: { title: "Resilience Fatigue", tags: ["Burnout", "Resilience"], slug: "resilience-fatigue" },
-  14: { title: "From Funnels to Journeys (Q&A Pt 1)", tags: ["Q&A", "Urgency"], slug: "from-funnels-to-journeys-listener-qa-part-1" },
-  15: { title: "Navigating Noise, Remote Work & Strategy (Q&A Pt 2)", tags: ["Strategy", "Remote Work"], slug: "navigating-noise-remote-work-and-strategy-listener-qa-part-2" },
-  16: { title: "What Is a Brand, Really? (Part 1)", tags: ["Brand", "Identity"], slug: "what-is-a-brand-really-part-1" },
-  17: { title: "The Trust Premium (Part 2)", tags: ["Brand", "AI"], slug: "the-trust-premium-branding-in-the-age-of-ai-part-2" },
-  18: { title: "Getting Unstuck with Aric Marshall", tags: ["Pivoting", "Innovation"], slug: "getting-unstuck-with-aric-marshall" },
-  19: { title: "The Domino's Effect", tags: ["Competition", "CX"], slug: "the-dominos-effect" },
-  20: { title: "Calling All Builders: Real AI Use", tags: ["AI", "Tools"], slug: "calling-all-builders-real-ai-use-with-keegen-knapp" }
-};
-const SLACKERS_BASE = "https://slackerspod.simplecast.com/episodes/";
-
-// ============================================================================
-// SUGGESTIONS
-// ============================================================================
+// ─── SUGGESTIONS (Mapped to the 3 outcomes) ──────────────────────────────────
 const SUGGESTIONS = [
   "I have an idea but don't know where to start",
-  "I built something and I'm worried it won't scale",
-  "I have funding and validation — let's build",
-  "Why are you called Tandem Labs?",
-  "What does a 60-day Jump actually cost?"
+  "I built something and I'm worried it won't scale", 
+  "I have funding and validation — let's build"
 ];
 
-// ============================================================================
-// STATE
-// ============================================================================
 let conversation = [];
 let isLoading = false;
 
@@ -1064,9 +424,7 @@ const suggestionsEl = document.getElementById('suggestions');
 const errorNote   = document.getElementById('errorNote');
 const charCount   = document.getElementById('charCount');
 
-// ============================================================================
-// SUGGESTIONS BUILD
-// ============================================================================
+// ─── BUILD SUGGESTIONS ────────────────────────────────────────────────────────
 SUGGESTIONS.forEach(s => {
   const btn = document.createElement('button');
   btn.className = 'sug-btn';
@@ -1080,31 +438,18 @@ SUGGESTIONS.forEach(s => {
   suggestionsEl.appendChild(btn);
 });
 
-// ============================================================================
-// GREETING
-// ============================================================================
-const GREETING_TEXT = `Hi, I'm the Tandem Agent.
-
-This isn't some onboarding form… It's more like a first handshake.
-
-We built Tandem Labs on a very specific idea: we don't want you working with us any longer than you have to. We have elite talent, using the most modern tools, to help you get where you need to be. Now. Not 12 months from now, buried in retainers and invoices.
-
-We operate like a tandem skydive. We strap in with you. We jump together. We land on the target. Once you're on the ground? We unclip and let you run unless you feel like jumping again!
-
-I'm here to figure out whether you need us to jump in with you for a 60-day sprint, or if you just need something to kick-start where you are now to get you unstuck today.
+// ─── GREETING ─────────────────────────────────────────────────────────────────
+setTimeout(() => {
+  const greeting = `I'm here to figure out whether you need us to jump in with you for a 60-day sprint, or if you just need something to kick-start where you are now to get you unstuck today.
 
 Let's start with the two questions that matter most.
 
-We don't expect you to share everything about your dream project right now, but where are you at with your idea?`;
+Where are you at with your idea?`;
+  addMessage('agent', greeting);
+  conversation.push({ role: 'assistant', content: greeting });
+}, 350);
 
-setTimeout(() => {
-  addMessage('agent', GREETING_TEXT);
-  conversation.push({ role: 'assistant', content: GREETING_TEXT });
-}, 300);
-
-// ============================================================================
-// INPUT HANDLING
-// ============================================================================
+// ─── INPUT HANDLING ───────────────────────────────────────────────────────────
 inputEl.addEventListener('input', () => {
   autoResize();
   const len = inputEl.value.length;
@@ -1123,76 +468,29 @@ sendBtn.addEventListener('click', () => { if (!isLoading) sendMessage(); });
 
 function autoResize() {
   inputEl.style.height = 'auto';
-  inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 80) + 'px';
 }
 
-// ============================================================================
-// MARKDOWN PARSING
-// ============================================================================
-function parseMarkdown(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-}
-
-// ============================================================================
-// OUTCOME SIGNAL PARSING
-// Looks for [OUTCOME:track] or [OUTCOME:explorer | redthread:Title | slackers:N]
-// Returns { cleanText, signal: {track, redthread, slackers} | null }
-// ============================================================================
-function parseOutcomeSignal(text) {
-  const regex = /\[OUTCOME:([^\]]+)\]/i;
-  const match = text.match(regex);
-  if (!match) return { cleanText: text, signal: null };
-
-  const payload = match[1].trim();
-  const parts = payload.split('|').map(p => p.trim());
-  const signal = { track: null, redthread: null, slackers: null };
-
-  parts.forEach(part => {
-    if (/^(explorer|builder|accelerator)$/i.test(part)) {
-      signal.track = part.toLowerCase();
-    } else if (/^redthread:/i.test(part)) {
-      signal.redthread = part.replace(/^redthread:/i, '').trim();
-    } else if (/^slackers:/i.test(part)) {
-      const n = parseInt(part.replace(/^slackers:/i, '').trim(), 10);
-      if (!isNaN(n)) signal.slackers = n;
-    }
-  });
-
-  const cleanText = text.replace(regex, '').trim();
-  return { cleanText, signal: signal.track ? signal : null };
-}
-
-// ============================================================================
-// RENDER: MESSAGE
-// ============================================================================
-function addMessage(role, text) {
+// ─── ADD MESSAGE ──────────────────────────────────────────────────────────────
+function addMessage(sender, text) {
   const row = document.createElement('div');
-  row.className = `msg-row ${role}`;
-
+  row.className = `msg-row ${sender}`;
+  
   const avatar = document.createElement('div');
-  avatar.className = `avatar ${role}`;
-  avatar.textContent = role === 'agent' ? 'TL' : 'You';
-
+  avatar.className = `avatar ${sender}`;
+  avatar.textContent = sender === 'user' ? 'You' : 'TL';
+  
   const bubble = document.createElement('div');
-  bubble.className = `bubble ${role}`;
-
-  if (role === 'agent') {
-    const { cleanText, signal } = parseOutcomeSignal(text);
-
-    // Render paragraphs
-    const paragraphs = cleanText.split('\n').filter(line => line.trim());
-    paragraphs.forEach(line => {
+  bubble.className = `bubble ${sender}`;
+  
+  if (sender === 'agent') {
+    // Split text into paragraphs and add them
+    const paragraphs = text.split('\n').filter(p => p.trim());
+    paragraphs.forEach(paragraph => {
       const p = document.createElement('p');
-      p.innerHTML = parseMarkdown(line);
+      p.textContent = paragraph;
       bubble.appendChild(p);
     });
-
-    // Render outcome card if signaled
-    if (signal) {
-      renderOutcomeCard(bubble, signal);
-    }
   } else {
     bubble.textContent = text;
   }
@@ -1203,156 +501,6 @@ function addMessage(role, text) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// ============================================================================
-// RENDER: OUTCOME CARD + RESOURCES
-// ============================================================================
-function renderOutcomeCard(parent, signal) {
-  if (signal.track === 'explorer') {
-    renderExplorerOutcome(parent, signal);
-  } else if (signal.track === 'builder') {
-    renderBuilderOutcome(parent);
-  } else if (signal.track === 'accelerator') {
-    renderAcceleratorOutcome(parent);
-  }
-}
-
-function renderExplorerOutcome(parent, signal) {
-  // Top card: recommend the two agents
-  const card = document.createElement('div');
-  card.className = 'outcome-card explorer';
-  card.innerHTML = `
-    <div class="outcome-label">The Explorer Track</div>
-    <div class="outcome-title">Get unstuck before you strap in</div>
-    <div class="outcome-price">Free. Keep running on your own. We'll be here when you're ready.</div>
-  `;
-
-  // Two agent buttons side by side (stacked via flex)
-  const btnWrap = document.createElement('div');
-  btnWrap.style.cssText = 'display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;';
-
-  const rtBtn = document.createElement('a');
-  rtBtn.href = RED_THREADS_AGENT_URL;
-  rtBtn.target = '_blank';
-  rtBtn.rel = 'noopener noreferrer';
-  rtBtn.className = 'outcome-cta';
-  rtBtn.style.background = '#dc2626';
-  rtBtn.innerHTML = 'Chat with Red Threads <span aria-hidden="true">→</span>';
-  btnWrap.appendChild(rtBtn);
-
-  const slBtn = document.createElement('a');
-  slBtn.href = SLACKERS_AGENT_URL;
-  slBtn.target = '_blank';
-  slBtn.rel = 'noopener noreferrer';
-  slBtn.className = 'outcome-cta';
-  slBtn.style.background = '#2569b0';
-  slBtn.innerHTML = 'Chat with Slackers <span aria-hidden="true">→</span>';
-  btnWrap.appendChild(slBtn);
-
-  card.appendChild(btnWrap);
-  parent.appendChild(card);
-
-  // Resource divider
-  const hasResources = signal.redthread || signal.slackers;
-  if (hasResources) {
-    const divider = document.createElement('div');
-    divider.className = 'resource-divider';
-    divider.textContent = 'Or start here';
-    parent.appendChild(divider);
-
-    const wrap = document.createElement('div');
-    wrap.className = 'resource-cards';
-
-    if (signal.redthread && RED_THREADS_DATA[signal.redthread]) {
-      wrap.appendChild(buildRedThreadCard(signal.redthread, RED_THREADS_DATA[signal.redthread]));
-    }
-    if (signal.slackers && SLACKERS_DATA[signal.slackers]) {
-      wrap.appendChild(buildSlackersCard(signal.slackers, SLACKERS_DATA[signal.slackers]));
-    }
-    parent.appendChild(wrap);
-  }
-}
-
-function buildRedThreadCard(title, data) {
-  const a = document.createElement('a');
-  a.className = 'resource-card';
-  a.href = RED_THREADS_BASE + data.slug;
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
-  a.innerHTML = `
-    <div class="resource-badge">RT</div>
-    <div class="resource-info">
-      <div class="resource-kicker">Red Threads Newsletter</div>
-      <div class="resource-title">${title}</div>
-      <div class="resource-tags">${data.tags.map(t => `<span class="resource-tag">${t}</span>`).join('')}</div>
-      <div class="resource-read">Read this issue →</div>
-    </div>
-  `;
-  return a;
-}
-
-function buildSlackersCard(num, data) {
-  const a = document.createElement('a');
-  a.className = 'resource-card slackers';
-  a.href = SLACKERS_BASE + data.slug;
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
-  a.innerHTML = `
-    <div class="resource-badge">Ep. ${num}</div>
-    <div class="resource-info">
-      <div class="resource-kicker">Slackers Podcast</div>
-      <div class="resource-title">${data.title}</div>
-      <div class="resource-tags">${data.tags.map(t => `<span class="resource-tag">${t}</span>`).join('')}</div>
-      <div class="resource-read">Listen to this episode →</div>
-    </div>
-  `;
-  return a;
-}
-
-function renderBuilderOutcome(parent) {
-  const card = document.createElement('div');
-  card.className = 'outcome-card builder';
-  card.innerHTML = `
-    <div class="outcome-label">The Builder Track</div>
-    <div class="outcome-title">The $10K AI Assessment</div>
-    <div class="outcome-price">Fixed fee · 60-day Jump · Plus direct access to the founding team for 10 months</div>
-    <div style="font-size:0.85rem; color:var(--text-dim); line-height:1.5;">
-      We test security and scale, apply the fixes you need, then hand you back a foundation that holds. When you hire Tandem, you hire the room.
-    </div>
-  `;
-  const cta = document.createElement('a');
-  cta.href = CALENDAR_URL;
-  cta.target = '_blank';
-  cta.rel = 'noopener noreferrer';
-  cta.className = 'outcome-cta';
-  cta.innerHTML = 'Book a fit call <span aria-hidden="true">→</span>';
-  card.appendChild(cta);
-  parent.appendChild(card);
-}
-
-function renderAcceleratorOutcome(parent) {
-  const card = document.createElement('div');
-  card.className = 'outcome-card accelerator';
-  card.innerHTML = `
-    <div class="outcome-label">The Accelerator Track</div>
-    <div class="outcome-title">The $25K, 60-Day Jump</div>
-    <div class="outcome-price">Fixed fee · Strategy, design, and development · All five partners, no contractors</div>
-    <div style="font-size:0.85rem; color:var(--text-dim); line-height:1.5;">
-      You know where you're going. You need the engine. We strap in, get you on a new path in under 60 days, and then we unclip.
-    </div>
-  `;
-  const cta = document.createElement('a');
-  cta.href = CALENDAR_URL;
-  cta.target = '_blank';
-  cta.rel = 'noopener noreferrer';
-  cta.className = 'outcome-cta';
-  cta.innerHTML = 'Schedule with the partners <span aria-hidden="true">→</span>';
-  card.appendChild(cta);
-  parent.appendChild(card);
-}
-
-// ============================================================================
-// TYPING INDICATOR
-// ============================================================================
 function addTyping() {
   const row = document.createElement('div');
   row.className = 'msg-row agent';
@@ -1374,23 +522,24 @@ function removeTyping() {
   if (t) t.remove();
 }
 
-// ============================================================================
-// CLEAR CONVERSATION
-// ============================================================================
+// ─── CLEAR CONVERSATION ───────────────────────────────────────────────────────
 function clearConversation() {
   conversation = [];
   messagesEl.innerHTML = '';
   suggestionsEl.style.display = 'flex';
   errorNote.style.display = 'none';
   setTimeout(() => {
-    addMessage('agent', GREETING_TEXT);
-    conversation.push({ role: 'assistant', content: GREETING_TEXT });
-  }, 200);
+    const greeting = `I'm here to figure out whether you need us to jump in with you for a 60-day sprint, or if you just need something to kick-start where you are now to get you unstuck today.
+
+Let's start with the two questions that matter most.
+
+Where are you at with your idea?`;
+    addMessage('agent', greeting);
+    conversation.push({ role: 'assistant', content: greeting });
+  }, 350);
 }
 
-// ============================================================================
-// SEND MESSAGE
-// ============================================================================
+// ─── SEND MESSAGE ─────────────────────────────────────────────────────────────
 async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text || isLoading) return;
@@ -1410,9 +559,11 @@ async function sendMessage() {
   addTyping();
 
   try {
-    const response = await fetch(WORKER_URL, {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
@@ -1429,20 +580,22 @@ async function sendMessage() {
     }
 
     const data = await response.json();
-    const reply = data.content?.[0]?.text || "I hit a snag on my end. Give me another try in a moment.";
+    const reply = data.content?.[0]?.text || "I hit a snag on my end — try again in a moment.";
 
     addMessage('agent', reply);
     conversation.push({ role: 'assistant', content: reply });
 
   } catch (err) {
     removeTyping();
-    console.error('Tandem Agent error:', err);
+    console.error('Tandem Labs AI error:', err);
     errorNote.textContent = `Something went wrong: ${err.message}. Check your connection and try again.`;
     errorNote.style.display = 'block';
     conversation.pop();
   }
 
   isLoading = false;
+  // Only auto-focus on desktop — on mobile this triggers the keyboard
+  // which covers the response the user just received
   if (!('ontouchstart' in window)) {
     inputEl.focus();
   }
