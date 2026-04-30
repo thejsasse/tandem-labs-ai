@@ -499,7 +499,7 @@ body {
   </div>
   <div class="header-info">
     <h1>Tandem Studio</h1>
-    <p>We jump together. Then we unclip.</p>
+    <p>Jump together. Land safely. Unclip.</p>
   </div>
   <div class="status">
     <div class="status-dot"></div>
@@ -537,7 +537,7 @@ body {
   </div>
 </div>
 
-<div class="version">Tandem Studio Agent v1.1.4</div>
+<div class="version">Tandem Studio Agent v1.1.6</div>
 
 <script>
 // ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
@@ -595,7 +595,7 @@ But right now? You don't need developers. You need customers."
 **Outcome 3: The Accelerator (The $25K Sprint)**
 - *Trigger:* They have a defined product, customer validation, and access to funding, but they lack the elite team to execute the strategy, design, and development.
 - *Action:* Provide the calendar link to book a fit meeting. Pitch the $25K, 60-day Jump.
-- *Example:* "You know exactly where you need to go; you just need the engine to get you there. This is exactly what we do. We do 60-day 'Jumps' for a fixed rate of $25K. We strap in with you, deliver the strategy, design, and development you are missing, and then we unclip so you can run. Let's schedule a time to meet with our five partners."
+- *Example:* "You know exactly where you need to go; you just need the engine to get you there. This is exactly what we do. We do 60-day 'Jumps' for a fixed rate of $25K. We strap in with you, deliver the strategy, design, and development you are missing, and then we unclip so you can run. Let's schedule a time to meet with our five partners: https://cal.com/thejsasse/30min"
 
 **[MOBILE RESPONSE GUIDELINES]**
 - Keep responses under 150 words for mobile users EXCEPT for Explorer outcome which should include the full content recommendations
@@ -681,6 +681,9 @@ function extractContentRefs(text) {
                          text.includes("You're in exploration mode") || text.includes("exploration mode") ||
                          text.includes("early discovery phase") || text.includes("validation") ||
                          text.includes("don't know where to start") || text.includes("where to start");
+
+  // Check for booking links
+  const hasBookingLink = text.includes("cal.com/thejsasse/30min") || text.includes("Let's schedule");
   
   if (needsValidation) {
     refs.push({
@@ -730,12 +733,20 @@ function addMessage(sender, text) {
     // Look for content references in the text
     const contentRefs = extractContentRefs(text);
     
-    // Add main text
+    // Add main text with clickable URLs
     const lines = text.split('\n').filter(line => line.trim());
     
     lines.forEach((line, i) => {
       const p = document.createElement('p');
-      p.textContent = line;
+      
+      // Make URLs clickable
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      if (urlRegex.test(line)) {
+        p.innerHTML = line.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #ff4500; text-decoration: underline;">$1</a>');
+      } else {
+        p.textContent = line;
+      }
+      
       bubble.appendChild(p);
     });
 
