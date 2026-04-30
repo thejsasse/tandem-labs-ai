@@ -339,60 +339,115 @@ body {
 }
 
 .content-card {
-  background: #f8f6f0;
-  border: 1px solid #e8e4d9;
-  border-radius: 12px;
-  padding: 12px;
+  background: white;
+  border-left: 4px solid #ff4500;
+  border-radius: 8px;
+  padding: 16px;
   text-decoration: none;
   color: inherit;
-  display: flex;
-  align-items: center;
-  gap: 12px;
   transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .content-card:hover {
-  background: #f3f4f6;
-  border-color: #ff4500;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.content-card.newsletter {
+  border-left-color: #dc2626;
+}
+
+.content-card.podcast {
+  border-left-color: #2563eb;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .card-icon {
   width: 32px;
   height: 32px;
-  background: #ff4500;
-  color: white;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
-.card-info {
-  flex: 1;
+.card-icon.newsletter {
+  background: #dc2626;
+}
+
+.card-icon.podcast {
+  background: #2563eb;
+}
+
+.card-type {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
 }
 
 .card-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin: 8px 0;
   color: #1a1a1a;
+  line-height: 1.3;
 }
 
-.card-subtitle {
-  font-size: 12px;
+.card-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.card-tag {
+  background: #f3f4f6;
   color: #6b7280;
-  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.card-tag.newsletter {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.card-tag.podcast {
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .card-action {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   color: #ff4500;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-action::after {
+  content: '→';
+  transition: transform 0.15s ease;
+}
+
+.content-card:hover .card-action::after {
+  transform: translateX(2px);
 }
 
 /* Mobile optimizations */
@@ -485,7 +540,7 @@ body {
   </div>
 </div>
 
-<div class="version">Tandem Studio Agent v1.1.1</div>
+<div class="version">Tandem Studio Agent v1.1.3</div>
 
 <script>
 // ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
@@ -523,9 +578,9 @@ Your goal is not to sell. Your goal is to be generous, diagnose the user's busin
 
 Here's what I want you to consume:
 
-**Listen to this specific episode** of the Slackers Podcast: "The Problem Interview - How to Talk to Customers Without Leading the Witness." It'll teach you exactly how to have those validation conversations without accidentally talking people into saying yes.
+**Listen to this specific episode** of the Slackers Podcast: "Customer Journeys." It'll teach you how to understand your customer's experience and build empathy for the people you want to serve.
 
-**Read this issue** of Red Threads newsletter: "The Mom Test - Why Your Friends Are Lying to You About Your Startup Idea." It breaks down the psychology of why people tell you what they think you want to hear, and how to get real feedback instead.
+**Read this issue** of Red Threads newsletter: "Getting Unstuck." It breaks down how to move forward when you're not sure what your next step should be, and how to turn uncertainty into clarity.
 
 Those two resources will get you unstuck on the validation piece.
 
@@ -622,20 +677,31 @@ function extractContentRefs(text) {
   const refs = [];
   
   // Look for specific Red Threads and Slackers mentions
-  if (text.includes("The Mom Test") || text.includes("Mom Test")) {
+  if (text.includes("The First Mile") || text.includes("first mile")) {
     refs.push({
       type: 'newsletter',
-      title: 'The Mom Test - Why Your Friends Are Lying to You About Your Startup Idea',
-      url: 'https://jmedia.beehiiv.com/p/the-mom-test'
+      title: 'The First Mile',
+      tags: ['Getting Started', 'Strategy'],
+      url: 'https://jmedia.beehiiv.com/p/the-first-mile'
     });
   }
   
-  if (text.includes("The Problem Interview") || text.includes("Problem Interview")) {
+  if (text.includes("Getting Unstuck") || text.includes("getting unstuck")) {
+    refs.push({
+      type: 'newsletter', 
+      title: 'Getting Unstuck',
+      tags: ['Strategy', 'Problem Solving'],
+      url: 'https://jmedia.beehiiv.com/p/getting-unstuck'
+    });
+  }
+  
+  if (text.includes("Customer Journeys") || text.includes("customer journey")) {
     refs.push({
       type: 'podcast',
-      title: 'The Problem Interview - How to Talk to Customers Without Leading the Witness',
-      episode: 'Ep. 15',
-      url: 'https://slackerspod.simplecast.com/episodes/the-problem-interview'
+      title: 'Customer Journeys',
+      episode: 'Ep. 5',
+      tags: ['Customer Journey', 'Retention', 'Empathy'],
+      url: 'https://slackerspod.simplecast.com/episodes/customer-journeys'
     });
   }
   
@@ -688,27 +754,35 @@ function addMessage(sender, text) {
       contentRefs.forEach(ref => {
         console.log(`Rendering content card:`, ref);
         const card = document.createElement('a');
-        card.className = 'content-card';
+        card.className = `content-card ${ref.type}`;
         card.href = ref.url;
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
         
         if (ref.type === 'newsletter') {
           card.innerHTML = `
-            <div class="card-icon">RT</div>
-            <div class="card-info">
-              <div class="card-title">${ref.title}</div>
-              <div class="card-subtitle">Red Threads Newsletter</div>
-              <div class="card-action">Read →</div>
-            </div>`;
+            <div class="card-header">
+              <div class="card-icon newsletter">RT</div>
+              <div class="card-type">Red Threads Newsletter</div>
+            </div>
+            <div class="card-title">${ref.title}</div>
+            <div class="card-tags">
+              ${ref.tags.map(tag => `<span class="card-tag newsletter">${tag}</span>`).join('')}
+            </div>
+            <div class="card-action">Read this issue</div>
+          `;
         } else if (ref.type === 'podcast') {
           card.innerHTML = `
-            <div class="card-icon">SP</div>
-            <div class="card-info">
-              <div class="card-title">${ref.title}</div>
-              <div class="card-subtitle">${ref.episode} • Slackers Podcast</div>
-              <div class="card-action">Listen →</div>
-            </div>`;
+            <div class="card-header">
+              <div class="card-icon podcast">${ref.episode}</div>
+              <div class="card-type">Slackers Podcast</div>
+            </div>
+            <div class="card-title">${ref.title}</div>
+            <div class="card-tags">
+              ${ref.tags.map(tag => `<span class="card-tag podcast">${tag}</span>`).join('')}
+            </div>
+            <div class="card-action">Listen to this episode</div>
+          `;
         }
         
         cardsDiv.appendChild(card);
