@@ -331,6 +331,70 @@ body {
   border-top: 1px solid #e8e4d9;
 }
 
+.content-cards {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.content-card {
+  background: #f8f6f0;
+  border: 1px solid #e8e4d9;
+  border-radius: 12px;
+  padding: 12px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.content-card:hover {
+  background: #f3f4f6;
+  border-color: #ff4500;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+  width: 32px;
+  height: 32px;
+  background: #ff4500;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.card-action {
+  font-size: 12px;
+  color: #ff4500;
+  font-weight: 500;
+}
+
 /* Mobile optimizations */
 @media (max-width: 480px) {
   .header {
@@ -404,7 +468,7 @@ body {
       <textarea 
         class="input" 
         id="input" 
-        placeholder="What are you trying to build?"
+        placeholder="How can we help you keep moving forward?"
         maxlength="2000"></textarea>
       <button class="send-btn" id="sendBtn" disabled aria-label="Send message">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -421,13 +485,15 @@ body {
   </div>
 </div>
 
-<div class="version">Tandem Studio Agent v1.0.9</div>
+<div class="version">Tandem Studio Agent v1.1.1</div>
 
 <script>
 // ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are the Tandem Agent, the digital front door and diagnostic partner for Tandem Studio (TandemStudio.ai). Tandem Studio is an elite, AI-native custom software development agency and venture studio founded by five C-level executives: Jonathan Sasse, Jaime Solis, Cade Collister, Keegen Knapp, and Scott Davis.
 
-Your goal is not to sell. Your goal is to be generous, diagnose the user's business bottleneck, and route them to one of three specific outcomes. You do this by determining if they have an idea that solves a real market problem, and if they have the validation and funding to execute it.
+Your goal is not to sell. Your goal is to be generous, diagnose the user's business bottleneck, and route them to one of three specific outcomes quickly. You do this by determining if they have an idea that solves a real market problem, and if they have the validation and funding to execute it.
+
+**[CRITICAL: ROUTING SPEED]** For vague "I have an idea" responses, you must route to the Explorer outcome by the 2nd response maximum. Do not engage in long diagnostic conversations unless they show clear Builder or Accelerator readiness.
 
 **[VOICE & TONE CONSTRAINTS]** You must speak using the "Jaime Solis Voice Profile".
 
@@ -441,7 +507,7 @@ Your goal is not to sell. Your goal is to be generous, diagnose the user's busin
 - *The Script:* "We operate like a tandem skydive. You don't need to be an expert in the gear (the AI tools) or the aerodynamics (the technical architecture). We strap in with you. We jump together. We share the exact same goal—landing safely on the target. And once you're safely on the ground? We unclip and let you run."
 - *The Anti-Retainer:* We do not do 12-month retainers. We do 60-day "Jumps". We come in, solve the problem for a fixed cost, and step back. We do not want clients dependent on us.
 
-**[THE DIAGNOSTIC FLOW]** When a user begins a chat, you must gently discover their status by asking variations of these fundamental questions:
+**[THE DIAGNOSTIC FLOW]** When a user begins a chat, you must quickly determine their readiness level:
 
 - "Who is this for, and what is it for?" (Do they have a defined product/idea?)
 - "Have you validated this with the market, and do you have the funding to build it right?" (Are they just exploring, or are they ready to jump?)
@@ -449,9 +515,23 @@ Your goal is not to sell. Your goal is to be generous, diagnose the user's busin
 **[ROUTING LOGIC: THE 3 OUTCOMES]** Based on their answers, gracefully route them to one of these three outcomes:
 
 **Outcome 1: The Explorer (Not Ready)**
-- *Trigger:* They have an idea, but no definition, no market validation, and no funding.
-- *Action:* Do not pitch a 60-day Jump. Be generous. Recommend ONE specific issue of the *Red Threads* newsletter and ONE specific episode of the *Slackers Podcast* that fits their problem.
-- *Example:* "It sounds like you have a great idea, but you are still figuring out exactly who it's for. We aren't the right fit for a full engagement right now, but we want to help you get unstuck. Listen to this specific episode of the Slackers Podcast, and read this issue of Red Threads. When you've validated the market, come back and we'll jump together."
+- *Trigger:* They have a vague idea, no clear definition, no market validation, and no funding.
+- *Action:* Do not pitch a 60-day Jump. Be generous. Provide ONE specific issue of the *Red Threads* newsletter and ONE specific episode of the *Slackers Podcast* that fits their problem. Use the exact format below.
+- *Response Format:* 
+
+"You're in exploration mode right now, and that's smart. You need to validate this thing before you build it.
+
+Here's what I want you to consume:
+
+**Listen to this specific episode** of the Slackers Podcast: "The Problem Interview - How to Talk to Customers Without Leading the Witness." It'll teach you exactly how to have those validation conversations without accidentally talking people into saying yes.
+
+**Read this issue** of Red Threads newsletter: "The Mom Test - Why Your Friends Are Lying to You About Your Startup Idea." It breaks down the psychology of why people tell you what they think you want to hear, and how to get real feedback instead.
+
+Those two resources will get you unstuck on the validation piece.
+
+Once you've done that work - once you've talked to real potential customers and confirmed they'll actually pay for this - come back and we can talk about jumping in together.
+
+But right now? You don't need developers. You need customers."
 
 **Outcome 2: The Builder (The $10K AI Assessment)**
 - *Trigger:* They have built a prototype, but they are worried about security, scalability, and how well it is coded.
@@ -464,11 +544,10 @@ Your goal is not to sell. Your goal is to be generous, diagnose the user's busin
 - *Example:* "You know exactly where you need to go; you just need the engine to get you there. This is exactly what we do. We do 60-day 'Jumps' for a fixed rate of $25K. We strap in with you, deliver the strategy, design, and development you are missing, and then we unclip so you can run. Let's schedule a time to meet with our five partners."
 
 **[MOBILE RESPONSE GUIDELINES]**
-- Keep responses under 150 words for mobile users
+- Keep responses under 150 words for mobile users EXCEPT for Explorer outcome which should include the full content recommendations
 - Use short paragraphs and single-line sentences
-- Ask one diagnostic question at a time
 - Be conversational, not sales-y
-- Focus on understanding their situation first
+- Focus on understanding their situation first, but route quickly
 `;
 
 // ─── SUGGESTIONS (Mapped to the 3 outcomes) ──────────────────────────────────
@@ -504,11 +583,13 @@ SUGGESTIONS.forEach(s => {
 
 // ─── GREETING ─────────────────────────────────────────────────────────────────
 setTimeout(() => {
-  const greeting = `I'm here to figure out whether you need us to jump in with you for a 60-day sprint, or if you just need something to kick-start where you are now to get you unstuck today.
+  const greeting = `Welcome to Tandem Studio! If you are just looking around, please don't let me stop you. You can put me away and come back if you like, but I can quickly help get you where you need to be.
 
-Let's start with the two questions that matter most.
+We love helping people - frankly, that's the only reason we started this. What brings you here today?
 
-Where are you at with your idea?`;
+Do you have a killer idea that needs refinement? Have you already defined your killer idea, and now you want to build it? Did you already start building it and need help finishing it?
+
+Or - are you just looking to assess where you are and maybe, how to get unstuck?`;
   addMessage('agent', greeting);
   conversation.push({ role: 'assistant', content: greeting });
 }, 350);
@@ -535,6 +616,33 @@ function autoResize() {
   inputEl.style.height = Math.min(inputEl.scrollHeight, 80) + 'px';
 }
 
+// ─── CONTENT DETECTION ────────────────────────────────────────────────────────
+function extractContentRefs(text) {
+  console.log('🔍 Extracting content refs from:', text);
+  const refs = [];
+  
+  // Look for specific Red Threads and Slackers mentions
+  if (text.includes("The Mom Test") || text.includes("Mom Test")) {
+    refs.push({
+      type: 'newsletter',
+      title: 'The Mom Test - Why Your Friends Are Lying to You About Your Startup Idea',
+      url: 'https://jmedia.beehiiv.com/p/the-mom-test'
+    });
+  }
+  
+  if (text.includes("The Problem Interview") || text.includes("Problem Interview")) {
+    refs.push({
+      type: 'podcast',
+      title: 'The Problem Interview - How to Talk to Customers Without Leading the Witness',
+      episode: 'Ep. 15',
+      url: 'https://slackerspod.simplecast.com/episodes/the-problem-interview'
+    });
+  }
+  
+  console.log('📋 Found content references:', refs);
+  return refs;
+}
+
 // ─── ADD MESSAGE ──────────────────────────────────────────────────────────────
 function addMessage(sender, text) {
   const row = document.createElement('div');
@@ -557,13 +665,59 @@ function addMessage(sender, text) {
   bubble.className = `bubble ${sender}`;
   
   if (sender === 'agent') {
-    // Split text into paragraphs and add them
-    const paragraphs = text.split('\n').filter(p => p.trim());
-    paragraphs.forEach(paragraph => {
+    console.log('Processing agent message:', text);
+    
+    // Look for content references in the text
+    const contentRefs = extractContentRefs(text);
+    
+    // Add main text
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    lines.forEach((line, i) => {
       const p = document.createElement('p');
-      p.textContent = paragraph;
+      p.textContent = line;
       bubble.appendChild(p);
     });
+
+    // Add content cards if we found any references
+    if (contentRefs.length > 0) {
+      console.log('✅ Rendering', contentRefs.length, 'content cards for:', contentRefs);
+      const cardsDiv = document.createElement('div');
+      cardsDiv.className = 'content-cards';
+      
+      contentRefs.forEach(ref => {
+        console.log(`Rendering content card:`, ref);
+        const card = document.createElement('a');
+        card.className = 'content-card';
+        card.href = ref.url;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+        
+        if (ref.type === 'newsletter') {
+          card.innerHTML = `
+            <div class="card-icon">RT</div>
+            <div class="card-info">
+              <div class="card-title">${ref.title}</div>
+              <div class="card-subtitle">Red Threads Newsletter</div>
+              <div class="card-action">Read →</div>
+            </div>`;
+        } else if (ref.type === 'podcast') {
+          card.innerHTML = `
+            <div class="card-icon">SP</div>
+            <div class="card-info">
+              <div class="card-title">${ref.title}</div>
+              <div class="card-subtitle">${ref.episode} • Slackers Podcast</div>
+              <div class="card-action">Listen →</div>
+            </div>`;
+        }
+        
+        cardsDiv.appendChild(card);
+      });
+      bubble.appendChild(cardsDiv);
+      console.log('✅ Content cards appended to bubble');
+    } else {
+      console.log('No content references found in text');
+    }
   } else {
     bubble.textContent = text;
   }
@@ -607,11 +761,13 @@ function clearConversation() {
   suggestionsEl.style.display = 'flex';
   errorNote.style.display = 'none';
   setTimeout(() => {
-    const greeting = `I'm here to figure out whether you need us to jump in with you for a 60-day sprint, or if you just need something to kick-start where you are now to get you unstuck today.
+    const greeting = `Welcome to Tandem Studio! If you are just looking around, please don't let me stop you. You can put me away and come back if you like, but I can quickly help get you where you need to be.
 
-Let's start with the two questions that matter most.
+We love helping people - frankly, that's the only reason we started this. What brings you here today?
 
-Where are you at with your idea?`;
+Do you have a killer idea that needs refinement? Have you already defined your killer idea, and now you want to build it? Did you already start building it and need help finishing it?
+
+Or - are you just looking to assess where you are and maybe, how to get unstuck?`;
     addMessage('agent', greeting);
     conversation.push({ role: 'assistant', content: greeting });
   }, 350);
