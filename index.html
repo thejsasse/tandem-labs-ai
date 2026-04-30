@@ -401,35 +401,16 @@ body {
 .card-title {
   font-size: 16px;
   font-weight: 600;
-  margin: 8px 0;
+  margin: 8px 0 12px 0;
   color: #1a1a1a;
   line-height: 1.3;
 }
 
-.card-tags {
+.card-footer {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.card-tag {
-  background: #f3f4f6;
-  color: #6b7280;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.card-tag.newsletter {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.card-tag.podcast {
-  background: #eff6ff;
-  color: #2563eb;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .card-action {
@@ -439,6 +420,7 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .card-action::after {
@@ -448,6 +430,21 @@ body {
 
 .content-card:hover .card-action::after {
   transform: translateX(2px);
+}
+
+.card-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-tag {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 /* Mobile optimizations */
@@ -540,7 +537,7 @@ body {
   </div>
 </div>
 
-<div class="version">Tandem Studio Agent v1.1.3</div>
+<div class="version">Tandem Studio Agent v1.1.4</div>
 
 <script>
 // ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
@@ -549,6 +546,8 @@ const SYSTEM_PROMPT = `You are the Tandem Agent, the digital front door and diag
 Your goal is not to sell. Your goal is to be generous, diagnose the user's business bottleneck, and route them to one of three specific outcomes quickly. You do this by determining if they have an idea that solves a real market problem, and if they have the validation and funding to execute it.
 
 **[CRITICAL: ROUTING SPEED]** For vague "I have an idea" responses, you must route to the Explorer outcome by the 2nd response maximum. Do not engage in long diagnostic conversations unless they show clear Builder or Accelerator readiness.
+
+**[SPECIAL CASE: "DON'T KNOW WHERE TO START"]** If someone explicitly says "I have an idea but don't know where to start" or similar, give a brief 1-2 sentence response asking how far they've gotten, then immediately provide the Explorer content recommendations regardless of their answer. They need content more than conversation at this stage.
 
 **[VOICE & TONE CONSTRAINTS]** You must speak using the "Jaime Solis Voice Profile".
 
@@ -676,31 +675,26 @@ function extractContentRefs(text) {
   console.log('🔍 Extracting content refs from:', text);
   const refs = [];
   
-  // Look for specific Red Threads and Slackers mentions
-  if (text.includes("The First Mile") || text.includes("first mile")) {
-    refs.push({
-      type: 'newsletter',
-      title: 'The First Mile',
-      tags: ['Getting Started', 'Strategy'],
-      url: 'https://jmedia.beehiiv.com/p/the-first-mile'
-    });
-  }
+  // Trigger content cards for validation/getting started scenarios
+  const needsValidation = text.includes("Getting Unstuck") || text.includes("getting unstuck") ||
+                         text.includes("Customer Journeys") || text.includes("customer journey") ||
+                         text.includes("You're in exploration mode") || text.includes("exploration mode") ||
+                         text.includes("early discovery phase") || text.includes("validation") ||
+                         text.includes("don't know where to start") || text.includes("where to start");
   
-  if (text.includes("Getting Unstuck") || text.includes("getting unstuck")) {
+  if (needsValidation) {
     refs.push({
       type: 'newsletter', 
       title: 'Getting Unstuck',
       tags: ['Strategy', 'Problem Solving'],
       url: 'https://jmedia.beehiiv.com/p/getting-unstuck'
     });
-  }
-  
-  if (text.includes("Customer Journeys") || text.includes("customer journey")) {
+    
     refs.push({
       type: 'podcast',
       title: 'Customer Journeys',
       episode: 'Ep. 5',
-      tags: ['Customer Journey', 'Retention', 'Empathy'],
+      tags: ['Customer Journey', 'Retention'],
       url: 'https://slackerspod.simplecast.com/episodes/customer-journeys'
     });
   }
@@ -759,6 +753,9 @@ function addMessage(sender, text) {
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
         
+        // Limit to first 2 tags
+        const displayTags = ref.tags.slice(0, 2);
+        
         if (ref.type === 'newsletter') {
           card.innerHTML = `
             <div class="card-header">
@@ -766,10 +763,12 @@ function addMessage(sender, text) {
               <div class="card-type">Red Threads Newsletter</div>
             </div>
             <div class="card-title">${ref.title}</div>
-            <div class="card-tags">
-              ${ref.tags.map(tag => `<span class="card-tag newsletter">${tag}</span>`).join('')}
+            <div class="card-footer">
+              <div class="card-action">Read this issue</div>
+              <div class="card-tags">
+                ${displayTags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+              </div>
             </div>
-            <div class="card-action">Read this issue</div>
           `;
         } else if (ref.type === 'podcast') {
           card.innerHTML = `
@@ -778,10 +777,12 @@ function addMessage(sender, text) {
               <div class="card-type">Slackers Podcast</div>
             </div>
             <div class="card-title">${ref.title}</div>
-            <div class="card-tags">
-              ${ref.tags.map(tag => `<span class="card-tag podcast">${tag}</span>`).join('')}
+            <div class="card-footer">
+              <div class="card-action">Listen to this episode</div>
+              <div class="card-tags">
+                ${displayTags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+              </div>
             </div>
-            <div class="card-action">Listen to this episode</div>
           `;
         }
         
